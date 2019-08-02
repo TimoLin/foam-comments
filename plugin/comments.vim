@@ -83,6 +83,9 @@
 " *********************************************************************************************
 " Jasmeet Anand 11th January 2009 v2.12
 " bug fix for haskel files as prpvided by Jean-Marie
+" *********************************************************************************************
+" Timo Zhang 2nd August 2019 v3
+" Add support for OpenFOAM case files, here we use c style
 "
 
 " Exit if already loaded
@@ -102,15 +105,28 @@ noremap  <silent> <C-X> :call UnCommentLine()<CR>
 " key-mappings for range un-comment lines in visual <Shift-V> mode
 vnoremap <silent> <C-X> :call RangeUnCommentLine()<CR>
 
+" function to check are we in a OpenFOAM case folder
+"   by checking whether it's under '0', 'constant', 'constant/polymesh','system' folder or not.
+function! OFDirChecher()
+    let file_name = buffer_name("%")
+    let up_dir = expand("%:p:h:t") "get file's upper directory
+    if file_name =~ '\Dict$' || file_name =~ '\Properties$' || file_name == 'fvSchemes' || file_name == 'fvSolution' || file_name == 'fvOptions'
+        return 1
+    elseif up_dir == '0' || up_dir == 'constant' || up_dir == 'system' || up_dir == 'polyMesh'
+        return 1
+    else
+        return 0
+endfunction
+
 " function to comment line in normal mode
 function! CommentLine()
   let file_name = buffer_name("%")
-
+  let in_openfoam_case_dir = OFDirChecher()
   " for .cpp or .hpp or .java or .C files use //
   if file_name =~ '\.cpp$' || file_name =~ '\.hpp$' || file_name =~ '\.java$' || file_name =~ '\.php[2345]\?$' || file_name =~ '\.C$'
     execute ":silent! normal ^i//\<ESC>==\<down>^"
   " for .c or .h or .pc or .css files use /* */
-  elseif file_name =~ '\.c$' || file_name =~ '\.h$' || file_name =~ '\.pc$' || file_name =~ '\.css$' || file_name =~ '\.js$'
+  elseif file_name =~ '\.c$' || file_name =~ '\.h$' || file_name =~ '\.pc$' || file_name =~ '\.css$' || file_name =~ '\.js$' || in_openfoam_case_dir
     " if there are previous comments on this line ie /* ... */
     if stridx(getline("."), "\/\*") != -1 && stridx(getline("."), "\*\/") != -1
       execute ":silent! normal :nohlsearch\<CR>:s/\\([^\\/\\*]*\\)\\(\\/\\*.*\\*\\/\\)/\\1\\*\\/\\2/\<CR>:s/\\([^[:blank:]]\\+\\)/\\/\\*\\1/\<CR>:nohlsearch\<CR>=="
@@ -170,6 +186,7 @@ endfunction
 " function to un-comment line in normal mode
 function! UnCommentLine()
   let file_name = buffer_name("%")
+  let in_openfoam_case_dir = OFDirChecher()
 
   " for .cpp or .hpp or .java or .C files use //
   if file_name =~ '\.cpp$' || file_name =~ '\.hpp$' || file_name =~ '\.java$' || file_name =~ '\.php[2345]\?$' || file_name =~ '\.C$'
@@ -179,7 +196,7 @@ function! UnCommentLine()
     execute ":silent! normal :nohlsearch\<CR>:s/(\\*//\<CR>:nohlsearch\<CR>"
 	execute ":silent! normal :nohlsearch\<CR>:s/\\*)//\<CR>:nohlsearch\<CR>=="
   " for .c or .h or .pc or .css files use /* */
-  elseif file_name =~ '\.c$' || file_name =~ '\.h$' || file_name =~ '\.pc$' || file_name =~ '\.css$' || file_name =~ '\.js$'
+  elseif file_name =~ '\.c$' || file_name =~ '\.h$' || file_name =~ '\.pc$' || file_name =~ '\.css$' || file_name =~ '\.js$' || in_openfoam_case_dir
     execute ":silent! normal :nohlsearch\<CR>:s/\\/\\*//\<CR>:s/\\*\\///\<CR>:nohlsearch\<CR>=="
   " for .vim files use "
   elseif file_name =~ '\.vim$' || file_name =~ '\.vimrc$'
@@ -215,12 +232,13 @@ endfunction
 " function to range comment lines in visual mode
 function! RangeCommentLine()
   let file_name = buffer_name("%")
+  let in_openfoam_case_dir = OFDirChecher()
 
   " for .cpp or .hpp or .java or .C files use //
-  if file_name =~ '\.cpp$' || file_name =~ '\.hpp$' || file_name =~ '\.java$' || file_name =~ '\.php[2345]\?$' || file_name =~ '\.C$'
+  if file_name =~ '\.cpp$' || file_name =~ '\.hpp$' || file_name =~ '\.java$' || file_name =~ '\.php[2345]\?$' || file_name =~ '\.C$' 
     execute ":silent! normal :s/\\S/\\/\\/\\0/\<CR>:nohlsearch<CR>=="
   " for .c or .h or .pc or .css files use /* */
-  elseif file_name =~ '\.c$' || file_name =~ '\.h$' || file_name =~ '\.pc$' || file_name =~ '\.css$' || file_name =~ '\.js$'
+  elseif file_name =~ '\.c$' || file_name =~ '\.h$' || file_name =~ '\.pc$' || file_name =~ '\.css$' || file_name =~ '\.js$' || in_openfoam_case_dir
     " if there are previous comments on this line ie /* ... */
     if stridx(getline("."), "\/\*") != -1 && stridx(getline("."), "\*\/") != -1
       execute ":silent! normal :nohlsearch\<CR>:s/\\([^\\/\\*]*\\)\\(\\/\\*.*\\*\\/\\)/\\1\\*\\/\\2/\<CR>:s/\\([^[:blank:]]\\+\\)/\\/\\*\\1/\<CR>:nohlsearch\<CR>=="
@@ -280,12 +298,13 @@ endfunction
 " function to range un-comment lines in visual mode
 function! RangeUnCommentLine()
   let file_name = buffer_name("%")
+  let in_openfoam_case_dir = OFDirChecher()
 
   " for .cpp or .hpp or .java files use //
   if file_name =~ '\.cpp$' || file_name =~ '\.hpp$' || file_name =~ '\.java$' || file_name =~ '\.php[2345]\?$' || file_name =~ '\.C$'
     execute ":silent! normal :s/\\/\\///\<CR>:nohlsearch\<CR>=="
   " for .c or .h or .pc or .css files use /* */
-  elseif file_name =~ '\.c$' || file_name =~ '\.h$' || file_name =~ '\.pc$' || file_name =~ '\.css$' || file_name =~ '\.js$'
+  elseif file_name =~ '\.c$' || file_name =~ '\.h$' || file_name =~ '\.pc$' || file_name =~ '\.css$' || file_name =~ '\.js$' || in_openfoam_case_dir
     execute ":silent! normal :nohlsearch\<CR>:s/\\/\\*//\<CR>:s/\\*\\///\<CR>:nohlsearch\<CR>=="
   " for .vim files use " 
   elseif file_name =~ '\.vim$' || file_name =~ '\.vimrc$'
