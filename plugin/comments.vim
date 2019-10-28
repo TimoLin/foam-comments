@@ -123,7 +123,7 @@ function! CommentLine()
   let file_name = buffer_name("%")
   let in_openfoam_case_dir = OFDirChecher()
   " for .cpp or .hpp or .java or .C files use //
-  if file_name =~ '\.cpp$' || file_name =~ '\.hpp$' || file_name =~ '\.java$' || file_name =~ '\.php[2345]\?$' || file_name =~ '\.C$'
+  if file_name =~ '\.cpp$' || file_name =~ '\.hpp$' || file_name =~ '\.java$' || file_name =~ '\.php[2345]\?$' || file_name =~ '\.C$' || file_name =~ '\.H$'
     execute ":silent! normal ^i//\<ESC>==\<down>^"
   " for .c or .h or .pc or .css files use /* */
   elseif file_name =~ '\.c$' || file_name =~ '\.h$' || file_name =~ '\.pc$' || file_name =~ '\.css$' || file_name =~ '\.js$' || in_openfoam_case_dir
@@ -189,7 +189,7 @@ function! UnCommentLine()
   let in_openfoam_case_dir = OFDirChecher()
 
   " for .cpp or .hpp or .java or .C files use //
-  if file_name =~ '\.cpp$' || file_name =~ '\.hpp$' || file_name =~ '\.java$' || file_name =~ '\.php[2345]\?$' || file_name =~ '\.C$'
+  if file_name =~ '\.cpp$' || file_name =~ '\.hpp$' || file_name =~ '\.java$' || file_name =~ '\.php[2345]\?$' || file_name =~ '\.C$' || file_name =~ '\.H$'
     execute ":silent! normal :nohlsearch\<CR>:s/\\/\\///\<CR>:nohlsearch\<CR>=="
   " for .ml or .mli
   elseif file_name =~ '\.ml$' || file_name =~ '\.mli$'
