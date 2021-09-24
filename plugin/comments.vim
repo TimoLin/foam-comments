@@ -177,6 +177,9 @@ function! CommentLine()
   " for VHDL and Haskell files use -- 
   elseif file_name =~ '\.vhd$' || file_name =~ '\.vhdl$' || file_name =~ '\.hs$'
     execute ":silent! normal ^gI-- \<ESC>\<down>^"
+  " for Matlab scripts use %
+  elseif file_name =~ '\.m$'
+    execute ":silent! normal ^i%\<ESC>\<down>^"
   " for all other files use # 
   else
     execute ":silent! normal ^i#\<ESC>\<down>^"
@@ -223,6 +226,9 @@ function! UnCommentLine()
   " for VHDL and Haskell files use --
   elseif file_name =~ '\.vhd$' || file_name =~ '\.vhdl$' || file_name =~ '\.hs$'
     execute ":silent! normal :nohlsearch\<CR>:s/-- //\<CR>:nohlsearch\<CR>"
+  " for Matlab scripts use %
+  elseif file_name =~ '\.m$'
+    execute ":silent! normal :nohlsearch\<CR>:s/%/\<CR>:nohlsearch\<CR>"
   " for all other files use # 
   else
     execute ":silent! normal :nohlsearch\<CR>:s/\\#//\<CR>:nohlsearch\<CR>"
