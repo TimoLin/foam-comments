@@ -218,7 +218,7 @@ function! UnCommentLine()
   elseif file_name =~ '\.tex$' || file_name =~ '\.nw$'
     execute ":silent! normal :nohlsearch\<CR>:s/%/\<CR>:nohlsearch\<CR>"
   " for fortran 77 files use C on first column 
-  elseif file_name =~ '\.f$' || file_name =~ '\.F$'
+  elseif file_name =~ '\.f$' || file_name =~ '\.F$'  || file_name =~ '\.FOR$'
     execute ":silent! normal ^x\<ESC>\<down>^"
   " for fortran 90/95 files use !
   elseif file_name =~ '\.f90$' || file_name =~ '\.F90$' || file_name =~ '\.f95$' || file_name =~ '\.F95$'
